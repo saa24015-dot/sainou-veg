@@ -79,7 +79,7 @@ a {
 .hero {
   position: relative;
   margin: 24px auto;
-  max-width: 960px;
+  max-width: 660px;
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: var(--shadow);
