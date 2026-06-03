@@ -231,11 +231,11 @@ a {
    1. カラー変数の定義（色の名前を登録）
    ========================================================= */
 :root {
-    --primary-color: #e63946;    /* トマトの鮮やかな赤 */
-    --accent-color: #2a9d8f;     /* ヘタの新鮮な緑 */
-    --bg-color: #fdfaee;         /* 優しいクリーム色の背景 */
-    --text-color: #2b2d42;       /* 読みやすい濃いグレー */
-    --card-bg: #ffffff;          /* カードの白 */
+    --primary-color: #e63946 !important;    /* トマトの鮮やかな赤 */
+    --accent-color: #2a9d8f !important;     /* ヘタの新鮮な緑 */
+    --bg-color: #fdfaee !important;         /* 優しいクリーム色の背景 */
+    --text-color: #2b2d42 !important;       /* 読みやすい濃いグレー */
+    --card-bg: #ffffff !important;          /* カードの白 */
 }
 
 /* =========================================================
