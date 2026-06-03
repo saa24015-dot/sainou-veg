@@ -42,8 +42,8 @@
       <p>３年ｓ組で育てました</p>
     </div>
   </section>
- <p class="center-text">日にち　毎週木曜日　午前１０時から午前１２時まで（なくなり次第終了）</p>
-<p class="center-text">お支払いは現金のみです</p>
+ <p class="center-text">日にち　毎週木曜日　午前１０時から午前１２時まで（なくなり次第終了）
+ お支払いは現金のみ</p>
      
   <!-- ▼ ここから作物の一覧 -->
   <main class="container">
@@ -93,5 +93,40 @@
     © 2026 西条農業高校 ／ 農業情報活用の授業で作りました
   </footer>
 
+<script>
+        // 降らせたい絵文字のリスト
+        const emojis = ['🍅', '🍆', '🍅', '🍆']; 
+
+        function createDrop() {
+            const drop = document.createElement('div');
+            
+            // ランダムにトマトかナスを選ぶ
+            drop.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            
+            // 落ちてくる場所や大きさをランダムに設定
+            drop.style.position = 'fixed';
+            drop.style.top = '-50px'; // 画面の外（上）からスタート
+            drop.style.left = Math.random() * 100 + 'vw'; // 左右ランダムな位置
+            drop.style.fontSize = (Math.random() * 20 + 20) + 'px'; // 大きさ（20px〜40px）
+            drop.style.zIndex = '9999'; // 一番手前に表示
+            drop.style.pointerEvents = 'none'; // クリックの邪魔をしない
+            
+            // 落ちるスピードと回転をランダムに設定（CSSアニメーション）
+            const duration = Math.random() * 3 + 3; // 3秒〜6秒で落ちる
+            drop.style.animation = `fall ${duration}s linear forwards, spin ${Math.random() * 2 + 2}s linear infinite`;
+
+            document.body.appendChild(drop);
+
+            // 画面の下まで落ちたら自動で消す
+            setTimeout(() => {
+                drop.remove();
+            }, duration * 1000);
+        }
+
+        // 0.4秒（400ミリ秒）ごとに1個降らせる
+        setInterval(createDrop, 400);
+    </script>
+    </body>
+     
 </body>
 </html>
