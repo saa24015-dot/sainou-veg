@@ -221,6 +221,12 @@ a {
 }
 
 :root {
+  /* 1. まずは「色の名前」を登録する */
+:root {
+   /* =========================================================
+   1. カラー変数の定義（色の名前を登録）
+   ========================================================= */
+:root {
     --primary-color: #e63946;    /* トマトの鮮やかな赤 */
     --accent-color: #2a9d8f;     /* ヘタの新鮮な緑 */
     --bg-color: #fdfaee;         /* 優しいクリーム色の背景 */
@@ -228,7 +234,149 @@ a {
     --card-bg: #ffffff;          /* カードの白 */
 }
 
-* {
+/* =========================================================
+   全体の設定
+   ========================================================= */
+body {
+    background-color: var(--bg-color);   /* 背景をクリーム色に */
+    color: var(--text-color);             /* 全体の文字を濃いグレーに */
+    font-family: sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+/* =========================================================
+   カードグリッド＆カード
+   ========================================================= */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 22px;
+  margin: 20px 0 60px;
+}
+
+.card {
+  background: var(--card-bg);            /* 変数から「白」を適用 */
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  text-decoration: none;
+  color: var(--text-color);              /* 変数から「濃いグレー」を適用 */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  /* ホバー時の影に少しトマトの赤を混ぜて楽しく */
+  box-shadow: 0 16px 36px rgba(230, 57, 70, 0.15); 
+}
+
+.card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.card .card-body {
+  padding: 14px 18px 20px;
+  flex-grow: 1;
+}
+
+.card .card-body h3 {
+  color: var(--accent-color);            /* 変数から「ヘタの緑」を適用 */
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+}
+
+.card .card-body p {
+  font-size: 0.92rem;
+  color: #6b6657;
+}
+
+.card .tag {
+  display: inline-block;
+  background: var(--primary-color);      /* 変数から「トマトの赤」を適用 */
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 2px 10px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+}
+
+/* =========================================================
+   商品ページ
+   ========================================================= */
+.product {
+  background: var(--card-bg);            /* 変数から「白」を適用 */
+  max-width: 760px;
+  margin: 30px auto 50px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+}
+
+.product .product-photo {
+  width: 100%;
+  height: 360px;
+  object-fit: cover;
+}
+
+.product .product-body {
+  padding: 28px 30px 36px;
+}
+
+.product .catch {
+  color: var(--primary-color);           /* 変数から「トマトの赤」を適用 */
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.product h1 {
+  color: var(--text-color);              /* 変数から「濃いグレー」を適用 */
+  font-size: 2rem;
+  margin: 4px 0 18px;
+}
+
+.product h2 {
+  color: var(--text-color);
+  font-size: 1.2rem;
+  /* 左側の線を「トマトの赤」にしてアクセントに */
+  border-left: 6px solid var(--primary-color); 
+  padding-left: 12px;
+  margin: 26px 0 8px;
+}
+
+.back-link {
+  display: inline-block;
+  margin: 0 0 30px 20px;
+  color: var(--accent-color);            /* 変数から「ヘタの緑」を適用 */
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+/* =========================================================
+   フッター
+   ========================================================= */
+.site-footer {
+  background: var(--text-color);          /* 変数から「濃いグレー」を適用 */
+  color: #fff;
+  text-align: center;
+  padding: 22px;
+  font-size: 0.85rem;
+  margin-top: 40px;
+}
+
+/* スマホ向けの調整 */
+@media (max-width: 600px) {
+  .product .product-photo { height: 240px; }
+  .product .product-body { padding: 20px 16px 24px; }
+}
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -239,6 +387,19 @@ body {
     background-color: var(--bg-color);
     color: var(--text-color);
     line-height: 1.6;
+}
+
+/* 既存のコードに transition を追加 */
+.card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  transition: transform 0.3s ease; /* 追加：画像の動きを滑らかに */
+}
+
+/* マウスが乗ったとき、画像を1.05倍にする設定を追加 */
+.card:hover img {
+  transform: scale(1.05); /* 追加 */
 }
 
 /* 「だれに / おすすめの食べ方」などの小見出し */
@@ -278,4 +439,16 @@ body {
   .hero img { height: 220px; }
   .hero .hero-text h1 { font-size: 1.4rem; }
   .product .product-photo { height: 240px; }
+}
+
+/* スマホ向けの調整（既存のコード内に追加） */
+@media (max-width: 600px) {
+  .hero img { height: 220px; }
+  .hero .hero-text h1 { font-size: 1.4rem; }
+  .product .product-photo { height: 240px; }
+  
+  /* 追加：スマホの時は中の余白を少し狭くして文字を読みやすくする */
+  .product .product-body {
+    padding: 20px 16px 24px;
+  }
 }
