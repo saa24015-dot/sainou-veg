@@ -103,30 +103,53 @@
             // ランダムにトマトかナスを選ぶ
             drop.innerText = emojis[Math.floor(Math.random() * emojis.length)];
             
-            // 落ちてくる場所や大きさをランダムに設定
+            // 基本のスタイルを設定
             drop.style.position = 'fixed';
-            drop.style.top = '-50px'; // 画面の外（上）からスタート
             drop.style.left = Math.random() * 100 + 'vw'; // 左右ランダムな位置
             drop.style.fontSize = (Math.random() * 20 + 20) + 'px'; // 大きさ（20px〜40px）
             drop.style.zIndex = '9999'; // 一番手前に表示
             drop.style.pointerEvents = 'none'; // クリックの邪魔をしない
+            drop.style.userSelect = 'none'; // 文字選択されないようにする
             
-            // 落ちるスピードと回転をランダムに設定（CSSアニメーション）
-            const duration = Math.random() * 3 + 3; // 3秒〜6秒で落ちる
-            drop.style.animation = `fall ${duration}s linear forwards, spin ${Math.random() * 2 + 2}s linear infinite`;
-
+            // スタート位置（画面のすぐ上）
+            let posY = -50;
+            drop.style.top = posY + 'px';
+            
+            // クルクル回すための角度
+            let angle = 0;
+            const spinSpeed = Math.random() * 4 - 2; // 回転速度と方向をランダムに
+            
             document.body.appendChild(drop);
 
-            // 画面の下まで落ちたら自動で消す
-            setTimeout(() => {
-                drop.remove();
-            }, duration * 1000);
+            // 落ちるスピードをランダムに設定（数値が大きいほど速い）
+            const fallSpeed = Math.random() * 3 + 2; 
+
+            // パラパラと下に動かすタイマー処理
+            const timer = setInterval(() => {
+                posY += fallSpeed; // 下に移動
+                angle += spinSpeed; // 回転
+                
+                drop.style.top = posY + 'px';
+                drop.style.transform = `rotate(${angle}deg)`;
+                
+                // 画面の一番下（ウィンドウの高さ）を超えたら消去する
+                if (posY > window.innerHeight) {
+                    clearInterval(timer);
+                    drop.remove();
+                }
+            }, 20); // 0.02秒ごとに少しずつ動かす
         }
 
         // 0.4秒（400ミリ秒）ごとに1個降らせる
         setInterval(createDrop, 400);
     </script>
-    </body>
+    ```
+
+### 🛠️ 貼り付けたあとの確認
+1. HTMLファイルを **保存（Ctrl + S 又は Cmd + S）** します。
+2. ブラウザの画面に戻り、**強制再読み込み（Ctrl + F5 又は Cmd + Shift + R）** をしてください。
+
+今回のコードは、JavaScript自身が「0.02秒ごとに野菜を数ピクセルずつ下に動かす」という計算を直接行っているため、CSSの設定がどうなっていても、必ず画面の上から下までくるくる回りながら落ちていくようになります！試してみてください🍅🍆
      
 </body>
 </html>
