@@ -220,6 +220,27 @@ a {
   margin: 4px 0 18px;
 }
 
+:root {
+    --primary-color: #e63946;    /* トマトの鮮やかな赤 */
+    --accent-color: #2a9d8f;     /* ヘタの新鮮な緑 */
+    --bg-color: #fdfaee;         /* 優しいクリーム色の背景 */
+    --text-color: #2b2d42;       /* 読みやすい濃いグレー */
+    --card-bg: #ffffff;          /* カードの白 */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
 /* 「だれに / おすすめの食べ方」などの小見出し */
 .product h2 {
   color: var(--color-green);
