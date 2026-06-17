@@ -144,6 +144,147 @@
         // 0.4秒（400ミリ秒）ごとに1個降らせる
         setInterval(createDrop, 400);
     </script>
+     <script>
+        const overlay = document.getElementById('game-overlay');
+        const openBtn = document.getElementById('open-game-btn');
+        const closeBtn = document.getElementById('close-game-btn');
+        const restartBtn = document.getElementById('restart-game-btn');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('game-score');
+        const finalScoreEl = document.getElementById('final-score');
+
+        const gridSize = 20; // 1マスのサイズ
+        const tileCount = canvas.width / gridSize; // マス目の数(20x20)
+
+        let snake, dx, dy, food, score, gameInterval, isGameOver;
+
+        // ゲーム初期化
+        function initGame() {
+            snake = [{x: 10, y: 10}]; // ミミズの初期位置（真ん中）
+            dx = 1; dy = 0; // 最初は右に動く
+            score = 0;
+            isGameOver = false;
+            scoreEl.innerText = score;
+            gameOverScreen.style.display = 'none';
+            spawnFood();
+            if(gameInterval) clearInterval(gameInterval);
+            gameInterval = setInterval(updateGame, 150); // 0.15秒ごとに動く（速度調整）
+        }
+
+        // エサ（トマトかナス）をランダムな位置に配置
+        function spawnFood() {
+            food = {
+                x: Math.floor(Math.random() * tileCount),
+                y: Math.floor(Math.random() * tileCount),
+                type: Math.random() > 0.5 ? '🍅' : '🍆' // 50%の確率でどっちかになる
+            };
+            // ミミズの体の上にエサが乗ったら再配置
+            snake.forEach(part => {
+                if(part.x === food.x && part.y === food.y) spawnFood();
+            });
+        }
+
+        // ゲームのメイン処理（描画と衝突判定）
+        function updateGame() {
+            if (isGameOver) return;
+
+            // 新しい頭の位置を計算
+            const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+
+            // 壁に当たったか、自分の体に当たったかの判定
+            if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount || checkSelfCollision(head)) {
+                endGame();
+                return;
+            }
+
+            // ミミズの配列の先頭に新しい頭を追加
+            snake.unshift(head);
+
+            // エサを食べたか判定
+            if (head.x === food.x && head.y === food.y) {
+                score += 10;
+                scoreEl.innerText = score;
+                spawnFood();
+            } else {
+                // 食べてなければお尻を1つ消す（これで進んでいるように見える）
+                snake.pop();
+            }
+
+            drawGrid();
+        }
+
+        function checkSelfCollision(head) {
+            return snake.some((part, index) => index !== 0 && part.x === head.x && part.y === head.y);
+        }
+
+        // 画面の描画
+        function drawGrid() {
+            // 背景クリア
+            ctx.fillStyle = '#2b2d42';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // エサの描画（絵文字）
+            ctx.font = "16px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(food.type, food.x * gridSize + gridSize/2, food.y * gridSize + gridSize/2);
+
+            // ミミズの描画
+            snake.forEach((part, index) => {
+                // 頭はちょっと濃い緑、体は明るいヘタの緑
+                ctx.fillStyle = index === 0 ? '#1a665b' : '#2a9d8f';
+                ctx.beginPath();
+                ctx.arc(part.x * gridSize + gridSize/2, part.y * gridSize + gridSize/2, gridSize/2 - 1, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        // ゲームオーバー処理
+        function endGame() {
+            isGameOver = true;
+            clearInterval(gameInterval);
+            finalScoreEl.innerText = score;
+            gameOverScreen.style.display = 'flex';
+        }
+
+        // キーボード操作
+        window.addEventListener('keydown', e => {
+            // ゲーム表示中のみ、矢印キーでの画面スクロールを防止
+            if (overlay.style.display === 'flex' && ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) {
+                e.preventDefault();
+            }
+
+            switch(e.key) {
+                case 'ArrowUp':    if (dy === 0) { dx = 0; dy = -1; } break;
+                case 'ArrowDown':  if (dy === 0) { dx = 0; dy = 1; } break;
+                case 'ArrowLeft':  if (dx === 0) { dx = -1; dy = 0; } break;
+                case 'ArrowRight': if (dx === 0) { dx = 1; dy = 0; } break;
+            }
+        });
+
+        // ポップアップを開閉するボタンの設定
+        openBtn.addEventListener('click', () => {
+            overlay.style.display = 'flex';
+            initGame();
+        });
+        closeBtn.addEventListener('click', () => {
+            overlay.style.display = 'none';
+            clearInterval(gameInterval);
+        });
+        restartBtn.addEventListener('click', initGame);
+    </script>
+    ```
+
+---
+
+### 🎮 このゲームのポイント
+* **ポップアップ式**：普段は隠れているので、通常のサイトデザイン（トマトの一覧や詳細）の邪魔をしません。
+* **トマトとナス**：ミミズのエサが、ランダムに 🍅 と 🍆 に切り替わります。
+* **スクロール防止**：ゲーム中に矢印キーを押した時、ブラウザの画面が勝手に上下に動いてしまわないように対策（`e.preventDefault()`）を入れてあります。
+
+すべてを保存して **強制再読み込み** を行えば、「ミミズゲームで遊ぶ」ボタンが出現し、キーボードで楽しく遊べるようになります。ぜひ試してみてください！
     ```
 
 
