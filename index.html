@@ -86,6 +86,33 @@
         </div>
       </a>
 
+         <div class="center-text" style="margin: 40px 0;">
+    <button id="open-game-btn" class="btn" style="background-color: var(--accent-color); box-shadow: 0 4px 15px rgba(42, 157, 143, 0.4);">
+        🐛 野菜パクパク！ミミズゲームで遊ぶ
+    </button>
+</div>
+
+<div id="game-overlay" class="game-overlay">
+    <div class="game-modal">
+        <button id="close-game-btn" class="close-btn">&times;</button>
+        <h2>🐛 野菜パクパクゲーム 🍅</h2>
+        <p class="game-instruction">矢印キー（↑ ↓ ← →）でミミズを動かして、トマトとナスを食べよう！</p>
+        
+        <div class="score-board">
+            スコア: <span id="game-score">0</span>
+        </div>
+        
+        <div class="canvas-wrapper">
+            <canvas id="gameCanvas" width="400" height="400"></canvas>
+            <div id="game-over-screen" class="game-over-screen">
+                <h3>ゲームオーバー！</h3>
+                <p>スコア: <span id="final-score">0</span></p>
+                <button id="restart-game-btn" class="btn">もう一度遊ぶ</button>
+            </div>
+        </div>
+    </div>
+</div>
+         
     </div>
   </main>
 
