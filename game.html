@@ -39,21 +39,33 @@
             display: block;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
         }
-        .game-over-screen {
-            display: none;
+        /* スタート画面とゲームオーバー画面の共通スタイル */
+        .game-screen-overlay {
+            display: flex;
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(43, 45, 66, 0.9);
+            background: rgba(43, 45, 66, 0.92);
             border-radius: 10px;
             color: #fff;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             gap: 15px;
+            padding: 20px;
         }
-        .game-over-screen h3 {
+        .game-screen-overlay h3 {
             font-size: 2rem;
             color: var(--primary-color);
+        }
+        .start-msg {
+            font-size: 1.2rem;
+            color: #2a9d8f;
+            font-weight: bold;
+            animation: blink 1.2s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
         }
     </style>
 </head>
@@ -72,9 +84,16 @@
         <div class="canvas-wrapper">
             <canvas id="gameCanvas" width="400" height="400"></canvas>
             
-            <div id="game-over-screen" class="game-over-screen">
+            <div id="game-start-screen" class="game-screen-overlay">
+                <h3>準備はいい？</h3>
+                <p>操作方法: 矢印キー（↑ ↓ ← →）</p>
+                <p class="start-msg">【 Enter 】を押してスタート！</p>
+            </div>
+
+            <div id="game-over-screen" class="game-screen-overlay" style="display: none;">
                 <h3>ゲームオーバー！</h3>
                 <p>スコア: <span id="final-score">0</span></p>
+                <p class="start-msg">【 Enter 】でもう一度遊ぶ</p>
                 <button id="restart-game-btn" class="btn">もう一度遊ぶ</button>
             </div>
         </div>
@@ -85,6 +104,7 @@
         const ctx = canvas.getContext('2d');
         const scoreEl = document.getElementById('game-score');
         const finalScoreEl = document.getElementById('final-score');
+        const startScreen = document.getElementById('game-start-screen');
         const gameOverScreen = document.getElementById('game-over-screen');
         const restartBtn = document.getElementById('restart-game-btn');
 
@@ -92,27 +112,38 @@
         const tileCount = canvas.width / gridSize;
 
         let snake, dx, dy, food, score, isGameOver;
-        let currentSpeed; // 現在の速度（ミリ秒）
-        let gameTimeoutId; // setTimeoutを管理するID
+        let isWaitingToStart = true; // スタート待機フラグ
+        let currentSpeed; 
+        let gameTimeoutId; 
 
-        const START_SPEED = 250; // 【最初のおおらかな速度（0.25秒に1マス移動）】
-        const MAX_SPEED = 60;    // 【最高速度の限界（これ以上は早くならない）】
-        const SPEED_UP_STEP = 10.5; // 【野菜を1個食べるごとに15ミリ秒スピードアップ】
+        const START_SPEED = 250;  
+        const MAX_SPEED = 60;     
+        const SPEED_UP_STEP = 10.5; // 前回の調整をキープ（スコア100で前のスコア70の速さ）
 
         const emojis = ['🍅', '🍆', '🍅', '🍆'];
 
-        function initGame() {
+        // 最初に見せる画面（描画の初期化だけして待機）
+        function showStartScreen() {
+            isWaitingToStart = true;
+            isGameOver = false;
             snake = [{x: 10, y: 10}];
             dx = 1; dy = 0;
             score = 0;
-            currentSpeed = START_SPEED; // 初速をセット
-            isGameOver = false;
+            currentSpeed = START_SPEED;
             scoreEl.innerText = score;
+            startScreen.style.display = 'flex';
             gameOverScreen.style.display = 'none';
             spawnFood();
-            
+            drawGrid(); // 背景と最初の野菜だけ裏に描いておく
+        }
+
+        // 実際のゲーム開始処理
+        function startGame() {
+            isWaitingToStart = false;
+            startScreen.style.display = 'none';
+            gameOverScreen.style.display = 'none';
             if(gameTimeoutId) clearTimeout(gameTimeoutId);
-            gameLoop(); // ループ開始
+            gameLoop();
         }
 
         function spawnFood() {
@@ -126,13 +157,9 @@
             });
         }
 
-        // 食べるごとに速度が変化するため、setIntervalからsetTimeoutのループに変更
         function gameLoop() {
-            if (isGameOver) return;
-
+            if (isGameOver || isWaitingToStart) return;
             updateGame();
-            
-            // 次のフレームまでの時間を「currentSpeed」でコントロール
             gameTimeoutId = setTimeout(gameLoop, currentSpeed);
         }
 
@@ -149,12 +176,9 @@
             if (head.x === food.x && head.y === food.y) {
                 score += 10;
                 scoreEl.innerText = score;
-                
-                // 【ここがポイント：野菜を食べたらスピードを上げる（時間を縮める）】
                 if (currentSpeed > MAX_SPEED) {
                     currentSpeed -= SPEED_UP_STEP;
                 }
-                
                 spawnFood();
             } else {
                 snake.pop();
@@ -193,10 +217,28 @@
             gameOverScreen.style.display = 'flex';
         }
 
+        // キー操作の受付
         window.addEventListener('keydown', e => {
+            // Enterキーの処理
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (isWaitingToStart) {
+                    startGame(); // スタート待機中ならゲーム開始
+                } else if (isGameOver) {
+                    showStartScreen(); // ゲームオーバーなら最初に戻る
+                    startGame(); // そのまま開始
+                }
+                return;
+            }
+
+            // 矢印キーの処理（スクロール防止）
             if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) {
                 e.preventDefault();
             }
+
+            // ゲーム待機中・終了後は矢印入力を受け付けない
+            if (isWaitingToStart || isGameOver) return;
+
             switch(e.key) {
                 case 'ArrowUp':    if (dy === 0) { dx = 0; dy = -1; } break;
                 case 'ArrowDown':  if (dy === 0) { dx = 0; dy = 1; } break;
@@ -205,10 +247,13 @@
             }
         });
 
-        restartBtn.addEventListener('click', initGame);
+        restartBtn.addEventListener('click', () => {
+            showStartScreen();
+            startGame();
+        });
         
-        // ページを開いた瞬間にゲームを開始
-        initGame();
+        // ページを開いた時は待機画面を表示
+        showStartScreen();
     </script>
 </body>
 </html>
